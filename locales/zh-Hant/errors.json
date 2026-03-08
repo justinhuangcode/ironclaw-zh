@@ -1,0 +1,8 @@
+{
+  "error.token_required": "請輸入權杖",
+  "error.invalid_token": "權杖無效",
+  "error.start_conversation_first": "請先開始一段對話",
+  "error.failed_to_send": "傳送失敗：{message}",
+  "error.failed_to_create_thread": "建立會話失敗：{message}",
+  "error.restart_failed": "重新啟動失敗：{message}"
+}

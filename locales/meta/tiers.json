@@ -1,0 +1,47 @@
+{
+  "strict_locales": ["en", "zh-Hans"],
+  "optional_locales": ["zh-Hant"],
+  "required_all_locales_prefixes": [
+    "auth.",
+    "approval.",
+    "activity.",
+    "markdown.",
+    "nav.",
+    "status.",
+    "restart.",
+    "common."
+  ],
+  "required_all_locales_keys": [
+    "chat.input_placeholder",
+    "chat.send",
+    "chat.processing",
+    "chat.readonly_placeholder",
+    "thread.new_title",
+    "thread.title.new_chat",
+    "error.event_message",
+    "error.token_required",
+    "error.invalid_token",
+    "error.start_conversation_first",
+    "error.failed_to_send",
+    "error.failed_to_create_thread",
+    "error.restart_failed",
+    "jobs.card.default_title",
+    "jobs.card.view",
+    "jobs.card.browse"
+  ],
+  "required_primary_chinese_prefixes": [
+    "memory.",
+    "logs.",
+    "jobs.",
+    "routines.",
+    "extensions.",
+    "skills.",
+    "thread.title.",
+    "slash."
+  ],
+  "required_primary_chinese_keys": [],
+  "notes": {
+    "strict_rule": "en and zh-Hans must always be complete and placeholder-compatible",
+    "optional_rule": "zh-Hant may be incomplete except for required_all_locales_* keys"
+  }
+}

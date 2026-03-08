@@ -2,7 +2,32 @@ name: Code Style
 on:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  localization-guardrails:
+    name: Localization Guardrails
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: 22
+    - name: Check locale structure
+      run: node ./scripts/check-locales.mjs
+    - name: Check forbidden locale identifiers
+      run: node ./scripts/check-forbidden-locale-ids.mjs
+    - name: Check i18n key references
+      run: node ./scripts/check-i18n-keys.mjs
+    - name: Check web client syntax
+      run: |
+        node --check ./src/channels/web/static/app.js
+        node --check ./src/channels/web/static/i18n.js
+
   format:
     name: Formatting
     runs-on: ubuntu-latest
@@ -49,10 +74,10 @@ jobs:
     name: Code Style (fmt + clippy)
     runs-on: ubuntu-latest
     if: always()
-    needs: [format, clippy]
+    needs: [localization-guardrails, format, clippy]
     steps:
       - run: |
-          if [[ "${{ needs.format.result }}" != "success" || "${{ needs.clippy.result }}" != "success" ]]; then
+          if [[ "${{ needs.localization-guardrails.result }}" != "success" || "${{ needs.format.result }}" != "success" || "${{ needs.clippy.result }}" != "success" ]]; then
             echo "One or more jobs failed"
             exit 1
           fi

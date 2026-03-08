@@ -304,7 +304,9 @@ pub async fn start_server(
     let statics = Router::new()
         .route("/", get(index_handler))
         .route("/style.css", get(css_handler))
+        .route("/i18n.js", get(i18n_js_handler))
         .route("/app.js", get(js_handler))
+        .route("/locales/{locale}/{bundle}", get(locale_bundle_handler))
         .route("/favicon.ico", get(favicon_handler));
 
     // Project file serving (behind auth to prevent unauthorized file access).
@@ -405,6 +407,47 @@ async fn js_handler() -> impl IntoResponse {
         ],
         include_str!("static/app.js"),
     )
+}
+
+async fn i18n_js_handler() -> impl IntoResponse {
+    (
+        [
+            (header::CONTENT_TYPE, "application/javascript"),
+            (header::CACHE_CONTROL, "no-cache"),
+        ],
+        include_str!("static/i18n.js"),
+    )
+}
+
+fn locale_bundle(locale: &str, bundle: &str) -> Option<&'static str> {
+    match (locale, bundle) {
+        ("en", "common.json") => Some(include_str!("../../../locales/en/common.json")),
+        ("en", "errors.json") => Some(include_str!("../../../locales/en/errors.json")),
+        ("en", "web.json") => Some(include_str!("../../../locales/en/web.json")),
+        ("zh-Hans", "common.json") => Some(include_str!("../../../locales/zh-Hans/common.json")),
+        ("zh-Hans", "errors.json") => Some(include_str!("../../../locales/zh-Hans/errors.json")),
+        ("zh-Hans", "web.json") => Some(include_str!("../../../locales/zh-Hans/web.json")),
+        ("zh-Hant", "common.json") => Some(include_str!("../../../locales/zh-Hant/common.json")),
+        ("zh-Hant", "errors.json") => Some(include_str!("../../../locales/zh-Hant/errors.json")),
+        ("zh-Hant", "web.json") => Some(include_str!("../../../locales/zh-Hant/web.json")),
+        _ => None,
+    }
+}
+
+async fn locale_bundle_handler(
+    Path((locale, bundle)): Path<(String, String)>,
+) -> impl IntoResponse {
+    match locale_bundle(&locale, &bundle) {
+        Some(body) => (
+            [
+                (header::CONTENT_TYPE, "application/json; charset=utf-8"),
+                (header::CACHE_CONTROL, "no-cache"),
+            ],
+            body,
+        )
+            .into_response(),
+        None => (StatusCode::NOT_FOUND, "Locale bundle not found").into_response(),
+    }
 }
 
 async fn favicon_handler() -> impl IntoResponse {

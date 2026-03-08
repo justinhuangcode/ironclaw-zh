@@ -1,0 +1,8 @@
+{
+  "error.token_required": "请输入令牌",
+  "error.invalid_token": "令牌无效",
+  "error.start_conversation_first": "请先开始一段对话",
+  "error.failed_to_send": "发送失败：{message}",
+  "error.failed_to_create_thread": "创建会话失败：{message}",
+  "error.restart_failed": "重启失败：{message}"
+}
