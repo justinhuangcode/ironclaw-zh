@@ -3,10 +3,6 @@ name: Regression Test Check
 on:
   pull_request:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   regression-test:
     name: Regression test enforcement

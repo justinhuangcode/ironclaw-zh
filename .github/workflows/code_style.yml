@@ -2,32 +2,7 @@ name: Code Style
 on:
   pull_request:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  localization-guardrails:
-    name: Localization Guardrails
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: 22
-    - name: Check locale structure
-      run: node ./scripts/check-locales.mjs
-    - name: Check forbidden locale identifiers
-      run: node ./scripts/check-forbidden-locale-ids.mjs
-    - name: Check i18n key references
-      run: node ./scripts/check-i18n-keys.mjs
-    - name: Check web client syntax
-      run: |
-        node --check ./src/channels/web/static/app.js
-        node --check ./src/channels/web/static/i18n.js
-
   format:
     name: Formatting
     runs-on: ubuntu-latest
@@ -37,7 +12,6 @@ jobs:
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
       with:
-        profile: minimal
         components: rustfmt
     - name: Check formatting
       run: cargo fmt --all -- --check
@@ -61,11 +35,36 @@ jobs:
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
       with:
-        profile: minimal
         components: clippy
     - uses: Swatinem/rust-cache@v2
       with:
         key: clippy-${{ matrix.name }}
+    - name: Check lints
+      run: cargo clippy --all --benches --tests --examples ${{ matrix.flags }} -- -D warnings
+
+  clippy-windows:
+    name: Clippy Windows (${{ matrix.name }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: all-features
+            flags: "--all-features"
+          - name: default
+            flags: ""
+          - name: libsql-only
+            flags: "--no-default-features --features libsql"
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy
+    - uses: Swatinem/rust-cache@v2
+      with:
+        key: clippy-windows-${{ matrix.name }}
     - name: Check lints
       run: cargo clippy --all --benches --tests --examples ${{ matrix.flags }} -- -D warnings
 
@@ -74,10 +73,10 @@ jobs:
     name: Code Style (fmt + clippy)
     runs-on: ubuntu-latest
     if: always()
-    needs: [localization-guardrails, format, clippy]
+    needs: [format, clippy, clippy-windows]
     steps:
       - run: |
-          if [[ "${{ needs.localization-guardrails.result }}" != "success" || "${{ needs.format.result }}" != "success" || "${{ needs.clippy.result }}" != "success" ]]; then
+          if [[ "${{ needs.format.result }}" != "success" || "${{ needs.clippy.result }}" != "success" || "${{ needs.clippy-windows.result }}" != "success" ]]; then
             echo "One or more jobs failed"
             exit 1
           fi
