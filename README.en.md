@@ -54,7 +54,7 @@
 
 ## Versioning
 
-- Current package version: `0.16.1`
+- Current package version: `0.16.1-zh.1`
 - Current recommended release tag: `v0.16.1-zh.1`
 
 ## Upstream
