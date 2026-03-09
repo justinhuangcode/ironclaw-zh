@@ -12,13 +12,20 @@
 ## 分支策略
 
 - `main`
-  - 保持为可发布状态
-  - 用于承接已经整理好的本地化、文档和发行层改动
-- `codex/*`
-  - 用于 Codex 或自动化协作分支
-  - 适合承载单批次、可回滚的改动
+  - 稳定分支，只包含已发布或已合并的代码
+  - 设有分支保护：必须通过 PR 合并，必须通过 CI
+  - 禁止 force push 和直接推送
+- `dev/<upstream-version>-zh`
+  - 开发集成分支，例如 `dev/0.16.1-zh`
+  - 长期存在，贯穿该上游版本的所有 zh 发行（zh.1、zh.2、zh.3…）
+  - 接收 feature/fix 分支的合并
+- `release/<upstream-version>-zh.<n>`
+  - 发布准备分支，例如 `release/0.16.1-zh.1`
+  - 从 dev 切出，只做版本号变更和最终修复
+  - 合并到 main 后删除
 - `feature/*` / `fix/*`
-  - 适合人工维护分支
+  - 适合人工维护的功能或修复分支
+  - 合并到 dev 分支
 
 ## 必跑检查
 
@@ -50,10 +57,10 @@ git merge --ff-only upstream/main
 git push origin main
 ```
 
-如果当前存在本地化分支：
+如果当前存在开发分支：
 
 ```bash
-git checkout codex/your-branch
+git checkout dev/0.16.1-zh
 git rebase main
 ```
 
@@ -61,33 +68,87 @@ git rebase main
 
 `ironclaw-zh` 版本规则：
 
-- 跟随上游 IronClaw 基础版本
-- `Cargo.toml` / `Cargo.lock` 版本保持与上游一致
-- Git tag / GitHub Release 在基础版本后追加 `-zh.N`
+- `Cargo.toml` 版本使用 `<上游版本>-zh.<n>` 格式（例如 `0.16.1-zh.1`）
+- 这是 SemVer 合法的 pre-release 标识
+- Git tag 使用 `v` 前缀（例如 `v0.16.1-zh.1`）
+- cargo-dist 要求 tag 版本与 `Cargo.toml` 版本一致
 
 例如：
 
-- 上游：`0.16.1`
-- 包版本：`0.16.1`
-- 中文发行标签：`v0.16.1-zh.1`
-- 下一次中文版发行标签：`v0.16.1-zh.2`
-- 上游升级后：包版本 `0.16.2`，发行标签 `v0.16.2-zh.1`
+- 上游版本：`0.16.1`
+- Cargo.toml 版本：`0.16.1-zh.1`
+- Git tag：`v0.16.1-zh.1`
+- 下一次 zh 发行：Cargo.toml `0.16.1-zh.2`，tag `v0.16.1-zh.2`
+- 上游升级后：Cargo.toml `0.16.2-zh.1`，tag `v0.16.2-zh.1`
+
+需要同步更新版本号的文件：
+
+- `Cargo.toml`（`version` 字段）
+- `Cargo.lock`（ironclaw 条目）
+- `README.md`、`README.en.md`、`README.zh-Hans.md`、`README.zh-Hant.md`（版本段落）
 
 ## 发版步骤
 
-1. 确认 `main` 已同步最新上游基线
-2. 确认 locale / 文档 / Web UI 改动已经整理完成
-3. 跑完必跑检查
-4. 确认 `Cargo.toml` 版本正确
-5. 创建 tag
-6. 推送 tag
+### 1. 准备开发分支
 
-示例：
+```bash
+git checkout dev/<version>-zh
+# 确认所有功能和修复已合并
+```
+
+### 2. 切出发布分支
+
+```bash
+git checkout -b release/<version>-zh.<n> dev/<version>-zh
+```
+
+### 3. 在发布分支上变更版本号
+
+更新 `Cargo.toml`、`Cargo.lock`、所有 README 中的版本号。
+
+### 4. 提交并创建 PR
+
+```bash
+git add Cargo.toml Cargo.lock README.md README.en.md README.zh-Hans.md README.zh-Hant.md
+git commit -m "chore(release): bump package version to <version>-zh.<n>"
+git push -u origin release/<version>-zh.<n>
+gh pr create --base main --title "release: v<version>-zh.<n>"
+```
+
+### 5. 等待 CI 通过并合并
+
+确认所有必要的状态检查通过后，合并 PR。
+
+### 6. 打标签并推送
 
 ```bash
 git checkout main
 git pull --ff-only origin main
-git tag v0.16.1-zh.1
-git push origin main
-git push origin v0.16.1-zh.1
+git tag -a v<version>-zh.<n> -m "Release v<version>-zh.<n>"
+git push origin v<version>-zh.<n>
 ```
+
+使用 annotated tag（`-a`），不使用 lightweight tag。
+
+### 7. 验证 Release 工作流
+
+推送 tag 后，`release.yml` 工作流将自动：
+
+- 运行 cargo-dist plan
+- 构建 WASM 扩展
+- 构建 5 个平台的二进制
+- 创建 GitHub Release 并上传产物
+
+### 8. 补充 Release Notes
+
+cargo-dist 创建的 Release 默认没有 body（因为不读 zh 的 CHANGELOG）。发布后手动补充：
+
+```bash
+gh release edit v<version>-zh.<n> --notes "Release notes content..."
+```
+
+### 9. 清理
+
+- 合并 checksums PR（如有）
+- 删除 release 分支
+- 将 release 分支合并回 dev（如有新提交）
