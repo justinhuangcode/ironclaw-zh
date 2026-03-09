@@ -19,7 +19,7 @@
   "artifacts": {
     "wasm32-wasip2": {
       "url": "https://github.com/nearai/ironclaw/releases/latest/download/telegram-mtproto-wasm32-wasip2.tar.gz",
-      "sha256": null
+      "sha256": "53be583801922a0815e289b5c2d76f1030b165e39b980cac92c9dc9dd3893ea7"
     }
   },
   "auth_summary": {
