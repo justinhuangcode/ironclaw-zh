@@ -96,19 +96,17 @@ _SAMPLE_TOOL_2 = {"name": "time", "description": "Get current time"}
 async def go_to_extensions(page):
     """Click the Extensions tab and wait for the panel to appear.
 
-    Waits for loadExtensions() to finish rendering by polling for the first
-    content signal (empty-state div or an installed card) rather than sleeping.
+    Waits for loadExtensions() to finish rendering via the tab's explicit
+    loaded-state marker rather than racing the initial loading placeholder.
     """
     await page.locator(SEL["tab_button"].format(tab="extensions")).click()
     await page.locator(SEL["tab_panel"].format(tab="extensions")).wait_for(
         state="visible", timeout=5000
     )
-    # loadExtensions() fires three parallel fetches then renders. Wait for the
-    # first concrete DOM signal instead of a hard sleep so the test is
-    # deterministic even under CI load.
-    await page.locator(
-        f"{SEL['extensions_list']} .empty-state, {SEL['ext_card_installed']}"
-    ).first.wait_for(state="visible", timeout=8000)
+    await page.wait_for_function(
+        "() => document.querySelector('#tab-extensions')?.dataset.loaded === 'true'",
+        timeout=8000,
+    )
 
 
 async def mock_ext_apis(page, *, installed=None, tools=None, registry=None):

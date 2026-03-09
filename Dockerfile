@@ -25,6 +25,7 @@ COPY build.rs build.rs
 COPY src/ src/
 COPY tests/ tests/
 COPY migrations/ migrations/
+COPY locales/ locales/
 COPY registry/ registry/
 COPY channels-src/ channels-src/
 COPY wit/ wit/

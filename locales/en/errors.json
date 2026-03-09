@@ -1,0 +1,8 @@
+{
+  "error.token_required": "Token required",
+  "error.invalid_token": "Invalid token",
+  "error.start_conversation_first": "Please start a conversation first",
+  "error.failed_to_send": "Failed to send: {message}",
+  "error.failed_to_create_thread": "Failed to create thread: {message}",
+  "error.restart_failed": "Restart failed: {message}"
+}

@@ -1,0 +1,28 @@
+name: Localization Guardrails
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  localization-guardrails:
+    name: Localization Guardrails
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Check locale structure
+        run: node ./scripts/check-locales.mjs
+      - name: Check forbidden locale identifiers
+        run: node ./scripts/check-forbidden-locale-ids.mjs
+      - name: Check i18n key references
+        run: node ./scripts/check-i18n-keys.mjs
+      - name: Check web client syntax
+        run: |
+          node --check ./src/channels/web/static/app.js
+          node --check ./src/channels/web/static/i18n.js
