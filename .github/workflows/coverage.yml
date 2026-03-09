@@ -6,11 +6,11 @@
 # What it does:
 # - Runs unit and integration tests with coverage instrumentation
 # - Runs E2E tests with coverage instrumentation
-# - Uploads coverage reports to Codecov (https://codecov.io/gh/nearai/ironclaw)
+# - Uploads coverage reports to Codecov (https://codecov.io/gh/justinhuangcode/ironclaw-zh)
 #
 # Viewing coverage reports:
 # - PRs automatically get coverage comments showing changes in coverage
-# - Visit https://codecov.io/gh/nearai/ironclaw for detailed coverage reports
+# - Visit https://codecov.io/gh/justinhuangcode/ironclaw-zh for detailed coverage reports
 # - Coverage reports are generated for three configurations:
 #   1. all-features: Full feature set
 #   2. default: Default features
@@ -119,7 +119,7 @@ jobs:
           flags: ${{ matrix.name }}
           disable_search: true
           use_oidc: true
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   e2e-coverage:
     name: E2E Coverage
@@ -203,7 +203,7 @@ jobs:
           flags: e2e
           disable_search: true
           use_oidc: true
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
       - name: Upload screenshots on failure
         if: failure()
