@@ -120,7 +120,7 @@ curl --proto '=https' --tlsv1.2 -LsSf https://github.com/justinhuangcode/ironcla
 
 ```sh
 brew tap justinhuangcode/tap
-brew install ironclaw
+brew install ironclaw-zh
 ```
 
 </details>

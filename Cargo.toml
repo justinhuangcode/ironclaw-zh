@@ -239,6 +239,8 @@ install-updater = true
 cache-builds = true
 # Homebrew tap repository for formula publishing
 tap = "justinhuangcode/homebrew-tap"
+# Override formula name to match project identity (ironclaw-zh, not ironclaw)
+formula = "ironclaw-zh"
 # Publish Homebrew formula on release
 publish-jobs = ["homebrew"]
 
