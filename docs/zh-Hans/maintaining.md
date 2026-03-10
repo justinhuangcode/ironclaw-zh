@@ -85,7 +85,7 @@ git rebase main
 
 - `Cargo.toml`（`version` 字段）
 - `Cargo.lock`（ironclaw 条目）
-- `README.md`、`README.en.md`、`README.zh-Hans.md`、`README.zh-Hant.md`（版本段落）
+- `README.md`、`README.en.md`、`README.zh-Hant.md`（版本段落）
 
 ## 发版步骤
 
@@ -109,7 +109,7 @@ git checkout -b release/<version>-zh.<n> dev/<version>-zh
 ### 4. 提交并创建 PR
 
 ```bash
-git add Cargo.toml Cargo.lock README.md README.en.md README.zh-Hans.md README.zh-Hant.md
+git add Cargo.toml Cargo.lock README.md README.en.md README.zh-Hant.md
 git commit -m "chore(release): bump package version to <version>-zh.<n>"
 git push -u origin release/<version>-zh.<n>
 gh pr create --base main --title "release: v<version>-zh.<n>"
