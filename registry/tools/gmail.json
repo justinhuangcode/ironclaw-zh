@@ -19,7 +19,7 @@
   "artifacts": {
     "wasm32-wasip2": {
       "url": "https://github.com/nearai/ironclaw/releases/latest/download/gmail-wasm32-wasip2.tar.gz",
-      "sha256": null
+      "sha256": "d1a9f1ed6d91bd590ed8b501e9a5b88e56963738d60141b1bc573214db539a25"
     }
   },
   "auth_summary": {

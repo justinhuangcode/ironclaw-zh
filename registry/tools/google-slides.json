@@ -18,7 +18,7 @@
   "artifacts": {
     "wasm32-wasip2": {
       "url": "https://github.com/nearai/ironclaw/releases/latest/download/google-slides-wasm32-wasip2.tar.gz",
-      "sha256": null
+      "sha256": "f3152ed6076d9ee60b1186e50193989e7192e1a768715dbf318936b675942823"
     }
   },
   "auth_summary": {

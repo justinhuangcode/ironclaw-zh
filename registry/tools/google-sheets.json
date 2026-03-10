@@ -19,7 +19,7 @@
   "artifacts": {
     "wasm32-wasip2": {
       "url": "https://github.com/nearai/ironclaw/releases/latest/download/google-sheets-wasm32-wasip2.tar.gz",
-      "sha256": null
+      "sha256": "7b6b976e02d914f5ba0a45388ee40c69440dd202c437c548977df00203b4773a"
     }
   },
   "auth_summary": {
