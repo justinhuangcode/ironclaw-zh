@@ -116,6 +116,16 @@ curl --proto '=https' --tlsv1.2 -LsSf https://github.com/justinhuangcode/ironcla
 </details>
 
 <details>
+  <summary>通过 Homebrew 安装 (macOS/Linux)</summary>
+
+```sh
+brew tap justinhuangcode/tap
+brew install ironclaw
+```
+
+</details>
+
+<details>
   <summary>从源码编译 (Windows、Linux、macOS 上使用 Cargo)</summary>
 
 确保你已安装 [Rust](https://rustup.rs)。
